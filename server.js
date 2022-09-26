@@ -1,15 +1,44 @@
 // 1. mongoose 모듈 가져오기
 require("dotenv").config({ path: ".env" });
-
 const MONGODB_URL = process.env.MONGODB_URL;
 
-const mongoose = require("mongoose");
+const express = require("express");
 
-// 2. testDB 세팅
-mongoose
-  .connect(MONGODB_URL, { useNewUrlParser: true })
-  .then(() => console.log("connected"))
-  .catch((err) => console.log("failed connection cause", err));
+const server = express();
+
+const User = require("./models/User");
+
+server.get("/", (req, res) => {
+  const newUser = new User();
+
+  newUser.email = "abc@abc.com";
+  newUser.name = "newman";
+  newUser.age = 50;
+  newUser
+    .save()
+    .then((user) => {
+      console.log(user);
+      res.json({ message: "user는 정상적으로 생성되었습니다." });
+    })
+    .catch((err) =>
+      res.json({
+        message: "user가 정상적으로 생성되지 않았습니다." + err,
+      })
+    );
+});
+
+server.listen(3000, (err) => {
+  if (err) {
+    console.log(err);
+  } else {
+    const mongoose = require("mongoose");
+
+    mongoose
+      .connect(MONGODB_URL, { useNewUrlParser: true })
+      .then(() => console.log("connected"))
+      .catch((err) => console.log("failed connection cause", err));
+  }
+});
 
 // // 3. 연결된 testDB 사용
 // var db = mongoose.connection;
