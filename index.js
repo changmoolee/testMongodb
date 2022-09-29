@@ -7,6 +7,14 @@ const express = require("express");
 
 const app = express();
 
+app.use(
+  cors({
+    origin: ["http://localhost:3000"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    credentials: true,
+  })
+);
+
 const userRouter = require("./routes/User");
 app.use(express.json());
 // 매우 중요...
@@ -17,14 +25,6 @@ app.get("/user", (req, res) => {
   res.json({ message: "success!" });
 });
 
-// app.use(
-//   cors({
-//     origin: ["http://localhost:3000"],
-//     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-//     credentials: true,
-//   })
-// );
-
 User.find((error, user) => {
   console.log("--- Read all ---");
   if (error) {
@@ -34,7 +34,9 @@ User.find((error, user) => {
   }
 });
 
-app.listen(3000, (err) => {
+const port = 8000;
+
+app.listen(port, (err) => {
   if (err) {
     console.log(err);
   } else {

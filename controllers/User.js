@@ -9,13 +9,11 @@ module.exports = {
     res.status(200).send({ data: contents });
   },
   userRegisterControl: async (req, res) => {
-    const { id, email, name, age } = req.body;
+    const { id, password } = req.body;
 
     const userContents = {
       id: id,
-      email: email,
-      name: name,
-      age: age,
+      password: password,
       enrolled: new Date(),
     };
 
@@ -24,7 +22,7 @@ module.exports = {
     if (insertDb) {
       return res
         .status(201)
-        .send({ message: "정상적으로 유저 정보가 등록되었습니다." });
+        .send({ message: "정상적으로 유저가 등록되었습니다." });
     } else {
       return res
         .status(500)
@@ -32,22 +30,20 @@ module.exports = {
     }
   },
   userEditControl: async (req, res) => {
-    const { id, email, name, age } = req.body;
+    const { id, password } = req.body;
 
     const editedUser = {
-      email: email,
-      name: name,
-      age: age,
+      password: password,
     };
 
-    const ToEditUser = await User.findOne({ id: id });
+    const userToBeEdited = await User.findOne({ id: id });
 
-    if (ToEditUser === null) {
-      res.status(400).send({ message: "게시글이 존재하지 않습니다." });
+    if (userToBeEdited === null) {
+      res.status(400).send({ message: "유저가 존재하지 않습니다." });
     } else {
       await User.find({ id: id }).updateOne(editedUser).exec();
 
-      res.status(200).send({ message: "유저 정보가 수정되었습니다." });
+      res.status(200).send({ message: "유저 비밀번호가 수정되었습니다." });
     }
   },
   userDeleteControl: async (req, res) => {
@@ -56,11 +52,11 @@ module.exports = {
     const ToDeleteUser = await User.findOne({ id: id });
 
     if (ToDeleteUser === null) {
-      res.status(400).send({ message: "유저 정보가 존재하지 않습니다." });
+      res.status(400).send({ message: "유저가 존재하지 않습니다." });
     } else {
       await User.deleteOne({ id: id });
 
-      res.status(200).send({ message: "유저 정보가 삭제되었습니다." });
+      res.status(200).send({ message: "유저가 삭제되었습니다." });
     }
   },
 };

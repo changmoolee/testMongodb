@@ -3,16 +3,13 @@ const { Schema } = mongoose;
 
 const userSchema = new Schema(
   {
-    id: String,
-    email: {
+    id: {
       type: String,
       required: true,
     },
-    name: String,
-    age: {
-      type: Number,
-      min: 18,
-      max: 50,
+    password: {
+      type: String,
+      required: true,
     },
     enrolled: {
       type: Date,
