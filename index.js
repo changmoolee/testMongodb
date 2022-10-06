@@ -4,8 +4,25 @@ const MONGODB_URL = process.env.MONGODB_URL;
 const cors = require("cors");
 
 const express = require("express");
+const session = require("express-session");
 
 const app = express();
+
+app.use(
+  session({
+    secret: "@signupapp",
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      domain: "localhost",
+      path: "/",
+      maxAge: 24 * 6 * 60 * 10000,
+      sameSite: "none",
+      // httpOnly: false,
+      secure: true,
+    },
+  })
+);
 
 app.use(
   cors({
@@ -19,20 +36,6 @@ const userRouter = require("./routes/User");
 app.use(express.json());
 // 매우 중요...
 app.use("/user", userRouter);
-const User = require("./models/User");
-
-app.get("/user", (req, res) => {
-  res.json({ message: "success!" });
-});
-
-User.find((error, user) => {
-  console.log("--- Read all ---");
-  if (error) {
-    console.log(error);
-  } else {
-    console.log(user);
-  }
-});
 
 const port = 8000;
 

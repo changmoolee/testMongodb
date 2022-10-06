@@ -59,4 +59,32 @@ module.exports = {
       res.status(200).send({ message: "유저가 삭제되었습니다." });
     }
   },
+
+  userLogInControl: async (req, res) => {
+    const { id, password } = req.body;
+    const userToBeLogIn = await User.findOne({ id: id, password: password });
+
+    if (userToBeLogIn === null) {
+      res.status(400).send({
+        message: "유저가 존재하지 않거나 비밀번호가 일치하지 않습니다.",
+      });
+    } else {
+      req.session.userId = id;
+      req.session.save(function () {});
+      res.status(200).send({ message: "로그인이 완료되었습니다." });
+    }
+  },
+  userLogOutControl: async (req, res) => {
+    console.log(req.session.userId);
+
+    if (req.session.userId) {
+      delete req.session.userId;
+      req.session.save(function () {});
+      res.status(200).send({ message: "로그아웃이 완료되었습니다." });
+    } else {
+      res.status(400).send({
+        message: "유저가 존재하지 않거나 비밀번호가 일치하지 않습니다.",
+      });
+    }
+  },
 };
