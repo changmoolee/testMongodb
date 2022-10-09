@@ -8,8 +8,24 @@ module.exports = {
 
     res.status(200).send({ data: contents });
   },
+  userInfoControl: async (req, res) => {
+    const userInfo = await User.findOne({ id: req.session.userId });
+    if (userInfo) {
+      res.status(200).send({ data: userInfo.id });
+    } else {
+      res.status(200).send({ data: null });
+    }
+  },
   userRegisterControl: async (req, res) => {
     const { id, password } = req.body;
+
+    const userToBeRegistered = await User.findOne({ id: id });
+
+    if (userToBeRegistered) {
+      return res
+        .status(500)
+        .send({ error: "아이디중복", message: "이미 존재하는 아이디입니다." });
+    }
 
     const userContents = {
       id: id,
@@ -20,28 +36,33 @@ module.exports = {
     const insertDb = new User(userContents).save();
 
     if (insertDb) {
-      return res
-        .status(201)
-        .send({ message: "정상적으로 유저가 등록되었습니다." });
+      res.status(201).send({ message: "정상적으로 유저가 등록되었습니다." });
     } else {
-      return res
+      res
         .status(500)
         .send({ message: "서버 오류가 발생했습니다. 등록되지 못했습니다." });
     }
   },
   userEditControl: async (req, res) => {
-    const { id, password } = req.body;
+    const { id, prevPassword, newPassword } = req.body;
 
-    const editedUser = {
-      password: password,
+    const editedPassword = {
+      password: newPassword,
     };
 
-    const userToBeEdited = await User.findOne({ id: id });
+    const userToBeEdited = await User.findOne({
+      id: id,
+      password: prevPassword,
+    });
 
     if (userToBeEdited === null) {
-      res.status(400).send({ message: "유저가 존재하지 않습니다." });
+      res.status(400).send({
+        error: "비밀번호불일치",
+        message: "기존 비밀번호가 일치하지 않습니다.",
+      });
     } else {
-      await User.find({ id: id }).updateOne(editedUser).exec();
+      // await User.find({ id: id }).updateOne(editedPassword).exec();
+      await User.findOneAndUpdate({ id: id }, editedPassword);
 
       res.status(200).send({ message: "유저 비밀번호가 수정되었습니다." });
     }
@@ -70,21 +91,21 @@ module.exports = {
       });
     } else {
       req.session.userId = id;
-      req.session.save(function () {});
+      req.session.save();
+
       res.status(200).send({ message: "로그인이 완료되었습니다." });
     }
   },
   userLogOutControl: async (req, res) => {
-    console.log(req.session.userId);
-
-    if (req.session.userId) {
-      delete req.session.userId;
-      req.session.save(function () {});
-      res.status(200).send({ message: "로그아웃이 완료되었습니다." });
-    } else {
-      res.status(400).send({
-        message: "유저가 존재하지 않거나 비밀번호가 일치하지 않습니다.",
-      });
-    }
+    req.session.destroy(function (err) {
+      if (err) {
+        res
+          .status(400)
+          .send({ err, message: "로그아웃이 정상적으로 되지 않았습니다." });
+      } else {
+        res.clearCookie("connect.sid");
+        res.status(205).send("로그아웃이 완료되었습니다.");
+      }
+    });
   },
 };
