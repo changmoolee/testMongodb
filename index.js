@@ -5,24 +5,27 @@ const cors = require("cors");
 
 const express = require("express");
 const session = require("express-session");
+const FireStore = require("session-file-store")(session);
 
 const app = express();
+const fileStoreOptions = {};
 
 app.use(
   session({
+    store: new FireStore(fileStoreOptions),
     secret: "@signupapp",
     resave: false,
     saveUninitialized: true,
-    cookie: {
-      domain: "localhost",
-      path: "/",
-      maxAge: 24 * 6 * 60 * 10000,
-      sameSite: "none",
-      // httpOnly: false,
-      secure: true,
-    },
+    // cookie: {
+    //   path: "/",
+    //   maxAge: null,
+    //   sameSite: "none",
+    //   secure: true,
+    // },
   })
 );
+
+app.use(express.json());
 
 app.use(
   cors({
@@ -33,7 +36,6 @@ app.use(
 );
 
 const userRouter = require("./routes/User");
-app.use(express.json());
 // 매우 중요...
 app.use("/user", userRouter);
 
