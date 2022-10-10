@@ -15,6 +15,10 @@ const userSchema = new Schema(
       type: Date,
       default: Date.now(),
     },
+    salt: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,

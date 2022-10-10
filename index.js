@@ -10,6 +10,16 @@ const FireStore = require("session-file-store")(session);
 const app = express();
 const fileStoreOptions = {};
 
+app.use(express.json());
+
+app.use(
+  cors({
+    origin: ["http://localhost:3000"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    credentials: true,
+  })
+);
+
 app.use(
   session({
     store: new FireStore(fileStoreOptions),
@@ -22,16 +32,6 @@ app.use(
     //   sameSite: "none",
     //   secure: true,
     // },
-  })
-);
-
-app.use(express.json());
-
-app.use(
-  cors({
-    origin: ["http://localhost:3000"],
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    credentials: true,
   })
 );
 
