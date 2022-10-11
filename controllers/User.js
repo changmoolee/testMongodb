@@ -185,7 +185,7 @@ module.exports = {
           .status(400)
           .send({ err, message: "로그아웃이 정상적으로 되지 않았습니다." });
       } else {
-        res.clearCookie("connect.sid");
+        res.clearCookie("userId");
         res.status(205).send("로그아웃이 완료되었습니다.");
       }
     });

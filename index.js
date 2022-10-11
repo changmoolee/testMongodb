@@ -5,7 +5,10 @@ const cors = require("cors");
 
 const express = require("express");
 const session = require("express-session");
-const FireStore = require("session-file-store")(session);
+const mongoose = require("mongoose");
+
+// const FireStore = require("session-file-store")(session);
+const MongoStore = require("connect-mongo");
 
 const app = express();
 const fileStoreOptions = {};
@@ -22,10 +25,11 @@ app.use(
 
 app.use(
   session({
-    store: new FireStore(fileStoreOptions),
+    store: MongoStore.create({ mongoUrl: MONGODB_URL }),
     secret: "@signupapp",
     resave: false,
     saveUninitialized: true,
+    name: "userId",
     // cookie: {
     //   path: "/",
     //   maxAge: null,
@@ -45,8 +49,6 @@ app.listen(port, (err) => {
   if (err) {
     console.log(err);
   } else {
-    const mongoose = require("mongoose");
-
     mongoose
       .connect(MONGODB_URL, { useNewUrlParser: true })
       .then(() => console.log("connected"))
