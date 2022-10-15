@@ -127,14 +127,6 @@ module.exports = {
         });
       }
     });
-
-    if (userToBeEdited === null) {
-      res.status(400).send({
-        error: "비밀번호불일치",
-        message: "기존 비밀번호가 일치하지 않습니다.",
-      });
-    } else {
-    }
   },
   userDeleteControl: async (req, res) => {
     const { id } = req.body;
@@ -145,7 +137,7 @@ module.exports = {
       res.status(400).send({ message: "유저가 존재하지 않습니다." });
     } else {
       await User.deleteOne({ id: id });
-
+      res.clearCookie("userId");
       res.status(200).send({ message: "유저가 삭제되었습니다." });
     }
   },
