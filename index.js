@@ -30,12 +30,13 @@ app.use(
     resave: false,
     saveUninitialized: true,
     name: "userId",
-    // cookie: {
-    //   path: "/",
-    //   maxAge: null,
-    //   sameSite: "none",
-    //   secure: true,
-    // },
+    cookie: {
+      path: "/",
+      maxAge: null,
+      sameSite: false,
+      secure: false,
+      httpOnly: true,
+    },
   })
 );
 
